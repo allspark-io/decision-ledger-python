@@ -47,7 +47,7 @@ jobs:
       - name: Stamp version
         run: |
           sed -i 's/^version = ".*"/version = "${{ needs.tag.outputs.version }}"/' pyproject.toml
-          sed -i 's/^__version__ = ".*"/__version__ = "${{ needs.tag.outputs.version }}"/' src/decision_ledger/__init__.py
+          sed -i 's/^__version__ = ".*"/__version__ = "${{ needs.tag.outputs.version }}"/' src/allspark_io/__init__.py
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

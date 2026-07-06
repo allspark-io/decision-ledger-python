@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e ".[docs]"
-      - run: pdoc decision_ledger -o site
+      - run: pdoc allspark_io -o site
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

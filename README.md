@@ -16,6 +16,27 @@ pip install allspark-decision-ledger --index-url https://allspark-014548221675.d
 (That index needs an AWS SigV4 auth token — see `aws codeartifact login`.
 Not yet published to public PyPI.)
 
+## Usage
+
+```python
+from allspark_io import DecisionLedgerClient
+
+client = DecisionLedgerClient(
+    "http://app.decision-ledger.svc.cluster.local:8080",
+    deployment_id="my-deployment", agent_id="my-agent",
+)
+
+check = client.check(mandate_ref="my-mandate", mandate_version="1", transaction={...})
+client.record_decision(
+    principal="...", mandate_ref="my-mandate", mandate_version="1",
+    episode_id="...", transaction={...}, execution={...}, unchecked=check.unchecked,
+)
+```
+
+Package distribution name is `allspark-decision-ledger` (what you `pip
+install`); the importable module is `allspark_io` — same pattern as e.g.
+`pip install python-dateutil` → `import dateutil`.
+
 ## Design notes
 
 Zero runtime dependencies, deliberately: this ships into arbitrary customer

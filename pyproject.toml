@@ -16,7 +16,7 @@ dependencies = []
 # (urllib.request for HTTP, threading/queue for the buffer worker).
 
 [project.optional-dependencies]
-dev = ["pytest>=7"]
+dev = ["pytest>=7", "strands-agents[otel,openai]==1.44.0"]
 docs = ["pdoc>=14"]
 
 [tool.setuptools.packages.find]

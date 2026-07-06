@@ -23,7 +23,10 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e ".[docs]"
-      - run: pdoc allspark_io -o site
+      # pdoc doesn't auto-recurse into subpackages when given just the
+      # top-level name — allspark_io.integrations must be listed explicitly
+      # (it then pulls in its own submodules, e.g. .strands, automatically).
+      - run: pdoc allspark_io allspark_io.integrations -o site
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

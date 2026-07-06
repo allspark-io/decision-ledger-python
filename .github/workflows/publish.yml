@@ -1,0 +1,64 @@
+name: publish
+
+# On merge to main: cut the next patch version tag (same scheme as the
+# org's Docker build.yml), stamp it into pyproject.toml/__init__.py, and
+# publish the package to the shared account's CodeArtifact `sdks` repo.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: v
+        run: |
+          latest=$(git tag -l 'v*.*.*' | sort -V | tail -1)
+          if [ -z "$latest" ]; then
+            next="v0.1.0"
+          else
+            IFS=. read -r M m p <<< "${latest#v}"
+            next="v${M}.${m}.$((p + 1))"
+          fi
+          echo "version=${next#v}" >> "$GITHUB_OUTPUT"
+      - run: |
+          git tag "v${{ steps.v.outputs.version }}"
+          git push origin "v${{ steps.v.outputs.version }}"
+
+  publish:
+    needs: tag
+    runs-on: ubuntu-latest
+    environment: shared
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Stamp version
+        run: |
+          sed -i 's/^version = ".*"/version = "${{ needs.tag.outputs.version }}"/' pyproject.toml
+          sed -i 's/^__version__ = ".*"/__version__ = "${{ needs.tag.outputs.version }}"/' src/decision_ledger/__init__.py
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: eu-west-1
+
+      - run: pip install build twine
+      - run: python -m build
+
+      - name: Publish to CodeArtifact
+        run: |
+          aws codeartifact login --tool twine --repository sdks --domain allspark --domain-owner 014548221675 --region eu-west-1
+          twine upload --repository codeartifact dist/*

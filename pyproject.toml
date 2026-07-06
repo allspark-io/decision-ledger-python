@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "allspark-decision-ledger"
+version = "0.1.0"
+description = "Python SDK for the Layer 1 Decision Ledger (decision-ledger) — buffered, durable, fail-open by design"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = []
+# Zero runtime dependencies, deliberately (see README "Design notes"): this
+# ships into arbitrary customer codebases, so nothing here should ever
+# conflict with a design partner's own dependency pins. stdlib only
+# (urllib.request for HTTP, threading/queue for the buffer worker).
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

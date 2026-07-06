@@ -1,4 +1,4 @@
-from decision_ledger.outbox import Outbox, backoff_seconds
+from allspark_io.outbox import Outbox, backoff_seconds
 
 
 def test_put_then_get_round_trips(tmp_path):

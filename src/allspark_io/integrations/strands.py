@@ -35,7 +35,7 @@ from ..client import DecisionLedgerClient
 
 logger = logging.getLogger("allspark_io.integrations.strands")
 
-TransactionBuilder = Callable[[dict, dict, dict], dict]
+TransactionBuilder = Callable[[dict, dict, dict], Optional[dict]]
 ExternalAnchorsBuilder = Callable[[dict], Optional[dict]]
 
 
@@ -82,7 +82,11 @@ def decision_ledger_hook(
     URL unset) while still returning a valid, harmless no-op hook — callers
     don't need an `if` around their `hooks=[...]` list.
 
-    build_transaction(result, tool_input, state) -> transaction dict
+    build_transaction(result, tool_input, state) -> transaction dict, OR None
+        to skip this call entirely (return None when the tool returned an
+        error payload rather than a real commitment — a failed booking or
+        checkout is not an economically consequential decision and must not
+        pollute the ledger).
     build_external_anchors(result) -> optional external_anchors dict
     """
     from strands.hooks import AfterToolCallEvent, HookProvider, HookRegistry
@@ -102,6 +106,11 @@ def decision_ledger_hook(
 
             result_dict = extract_result_dict(event.result) if not event.exception else {}
             transaction = build_transaction(result_dict, tool_input, state)
+            if transaction is None:
+                # The tool call didn't represent a real decision (e.g. it
+                # returned an error). Skip both check and record — don't
+                # write a junk decision event to the ledger.
+                return
 
             check_result = client.check(mandate_ref=mandate_ref, mandate_version=mandate_version, transaction=transaction)
             if check_result.decision != "allow" and not check_result.unchecked:

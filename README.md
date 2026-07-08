@@ -53,6 +53,10 @@ from allspark_io.integrations.strands import decision_ledger_hook
 client = DecisionLedgerClient(url, deployment_id="...", agent_id="...")
 
 def build_transaction(result, tool_input, state):
+    # Return None to skip: a failed tool call (error payload) isn't a real
+    # commitment and shouldn't land in the ledger.
+    if result.get("error") or not result.get("carrier"):
+        return None
     return {
         "counterparty": result.get("carrier"),
         "instrument": f"lane:{result.get('origin')}-{result.get('destination')}",

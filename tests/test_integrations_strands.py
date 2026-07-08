@@ -55,6 +55,30 @@ def test_hook_is_noop_when_client_is_none():
     hook._on_after_tool_call(event)  # must not raise
 
 
+def test_hook_skips_when_build_transaction_returns_none(tmp_path):
+    # A failed tool call (error payload) must not write a decision event:
+    # build_transaction returns None, and the hook records nothing.
+    fc = FakeCollector()
+    try:
+        client = DecisionLedgerClient(fc.base_url, deployment_id="dp", agent_id="a", outbox_dir=str(tmp_path))
+        Hook = decision_ledger_hook(
+            client, tool_name="book_carrier", mandate_ref="m", mandate_version="1",
+            build_transaction=lambda result, tool_input, state: None if result.get("error") else {
+                "counterparty": "c", "instrument": "i", "quantity": 1, "price": 1, "currency": "USD",
+            },
+        )
+        Hook()._on_after_tool_call(_FakeEvent(
+            tool_use={"name": "book_carrier", "input": {}},
+            result={"structuredContent": {"error": "Quote not found"}},
+            invocation_state={},
+        ))
+        # Nothing checked, nothing recorded — not even a /check call.
+        assert client.pending_count() == 0
+        assert fc.received == []
+    finally:
+        fc.shutdown()
+
+
 def test_hook_ignores_non_matching_tool_calls(tmp_path):
     fc = FakeCollector()
     try:

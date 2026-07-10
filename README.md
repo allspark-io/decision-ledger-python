@@ -81,6 +81,49 @@ no-op — no need to conditionally build the hooks list.
 when you import this specific module) — the core package stays
 dependency-free regardless.
 
+For [LangGraph](https://langchain-ai.github.io/langgraph/) / LangChain:
+
+```python
+from allspark_io import DecisionLedgerClient
+from allspark_io.integrations.langgraph import decision_ledger_callback
+
+client = DecisionLedgerClient(url, deployment_id="...", agent_id="...")
+
+def build_transaction(result, tool_input, state):
+    # Same shape as the Strands example above — a build_transaction
+    # written for one framework works unchanged with the other.
+    if result.get("error") or not result.get("carrier"):
+        return None
+    return {
+        "counterparty": result.get("carrier"),
+        "instrument": f"lane:{result.get('origin')}-{result.get('destination')}",
+        "quantity": 1,
+        "price": result.get("price"),
+        "currency": result.get("currency"),
+    }
+
+DecisionLedgerCallback = decision_ledger_callback(
+    client, tool_name="book_carrier", mandate_ref="...", mandate_version="1",
+    build_transaction=build_transaction,
+    # optional: build_external_anchors=lambda result: {"booking_ref": result["booking_ref"]}
+)
+
+graph.invoke(
+    input,
+    config={
+        "callbacks": [DecisionLedgerCallback()],
+        "metadata": {"actor_id": "...", "session_id": "..."},
+    },
+)
+```
+
+Unlike Strands (whose MCP tool results arrive wrapped and need
+`extract_result_dict()` to unwrap), a plain `@tool`-decorated function's
+return value arrives unwrapped already — a dict-returning tool just hands
+`build_transaction` that dict directly. `allspark_io.integrations.langgraph`
+lazily imports `langchain-core`, same dependency posture as the Strands
+integration.
+
 ## Design notes
 
 Zero runtime dependencies, deliberately: this ships into arbitrary customer

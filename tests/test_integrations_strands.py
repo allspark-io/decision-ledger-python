@@ -3,8 +3,8 @@ import time
 import pytest
 from fake_collector import FakeCollector
 
-from allspark_io import DecisionLedgerClient
-from allspark_io.integrations.strands import decision_ledger_hook, extract_result_dict
+from witwicky import DecisionLedgerClient
+from witwicky.integrations.strands import decision_ledger_hook, extract_result_dict
 
 
 class _FakeEvent:

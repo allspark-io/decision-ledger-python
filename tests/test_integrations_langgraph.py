@@ -4,8 +4,8 @@ import uuid
 import pytest
 from fake_collector import FakeCollector
 
-from allspark_io import DecisionLedgerClient
-from allspark_io.integrations.langgraph import decision_ledger_callback
+from witwicky import DecisionLedgerClient
+from witwicky.integrations.langgraph import decision_ledger_callback
 
 
 def _wait_until_delivered(client, timeout=5.0):
@@ -240,7 +240,7 @@ def test_build_transaction_reused_across_frameworks_is_schema_shaped(tmp_path):
 
         # Hand-asserted against decision-event 1-0-0's actual required
         # fields/constraints (always runs, no extra dependency) — see
-        # decision-ledger/core/src/allspark_ledger_core/schemas/decision-event/1-0-0.schema.json
+        # decision-ledger/core/src/witwickyio_ledger_core/schemas/decision-event/1-0-0.schema.json
         for field in ("event_id", "event_type", "schema_version", "occurred_at",
                       "deployment_id", "agent_id", "principal", "mandate_ref",
                       "mandate_version", "episode_id", "transaction", "reasoning", "execution"):
@@ -255,11 +255,11 @@ def test_build_transaction_reused_across_frameworks_is_schema_shaped(tmp_path):
         assert event["execution"]["reversibility"] in ("freely_reversible", "reversible_at_cost", "irreversible")
 
         # Stronger, opportunistic proof: real jsonschema validation against
-        # decision-ledger's actual schema, only if allspark_ledger_core
+        # decision-ledger's actual schema, only if witwickyio_ledger_core
         # happens to be installed (private CodeArtifact index — not a hard
         # dependency of this repo, see plan notes on why).
-        allspark_ledger_core = pytest.importorskip("allspark_ledger_core")
-        validator = allspark_ledger_core.load_validator("decision")
+        witwickyio_ledger_core = pytest.importorskip("witwickyio_ledger_core")
+        validator = witwickyio_ledger_core.load_validator("decision")
         validator.validate(event)
     finally:
         fc.shutdown()

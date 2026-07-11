@@ -1,16 +1,16 @@
 # decision-ledger-python
 
-Python SDK for [decision-ledger](https://github.com/allspark-io/decision-ledger)
+Python SDK for [decision-ledger](https://github.com/witwickyio/decision-ledger)
 (Layer 1) — the FR-1.3(a) native SDK on-ramp. See
-[allspark-io/architecture](https://github.com/allspark-io/architecture) for
+[witwickyio/architecture](https://github.com/witwickyio/architecture) for
 the full spec and ADRs.
 
-API docs: https://allspark-io.github.io/decision-ledger-python/
+API docs: https://witwickyio.github.io/decision-ledger-python/
 
 ## Install
 
 ```bash
-pip install allspark-decision-ledger --index-url https://allspark-014548221675.d.codeartifact.eu-west-1.amazonaws.com/pypi/sdks/simple/
+pip install witwicky --index-url https://witwickyio-014548221675.d.codeartifact.eu-west-1.amazonaws.com/pypi/sdks/simple/
 ```
 
 (That index needs an AWS SigV4 auth token — see `aws codeartifact login`.
@@ -19,7 +19,7 @@ Not yet published to public PyPI.)
 ## Usage
 
 ```python
-from allspark_io import DecisionLedgerClient
+from witwicky import DecisionLedgerClient
 
 client = DecisionLedgerClient(
     "http://app.decision-ledger.svc.cluster.local:8080",
@@ -33,9 +33,7 @@ client.record_decision(
 )
 ```
 
-Package distribution name is `allspark-decision-ledger` (what you `pip
-install`); the importable module is `allspark_io` — same pattern as e.g.
-`pip install python-dateutil` → `import dateutil`.
+Package distribution name and importable module are both `witwicky`.
 
 ## Framework integrations
 
@@ -47,8 +45,8 @@ actually yours — mapping a specific tool's result into a `transaction` dict.
 For [Strands Agents](https://strandsagents.com):
 
 ```python
-from allspark_io import DecisionLedgerClient
-from allspark_io.integrations.strands import decision_ledger_hook
+from witwicky import DecisionLedgerClient
+from witwicky.integrations.strands import decision_ledger_hook
 
 client = DecisionLedgerClient(url, deployment_id="...", agent_id="...")
 
@@ -77,15 +75,15 @@ agent = Agent(..., hooks=[DecisionLedgerHooks(), ...])
 `client=None` (e.g. the ledger URL isn't configured) is a valid, harmless
 no-op — no need to conditionally build the hooks list.
 
-`allspark_io.integrations.strands` lazily imports `strands-agents` (only
+`witwicky.integrations.strands` lazily imports `strands-agents` (only
 when you import this specific module) — the core package stays
 dependency-free regardless.
 
 For [LangGraph](https://langchain-ai.github.io/langgraph/) / LangChain:
 
 ```python
-from allspark_io import DecisionLedgerClient
-from allspark_io.integrations.langgraph import decision_ledger_callback
+from witwicky import DecisionLedgerClient
+from witwicky.integrations.langgraph import decision_ledger_callback
 
 client = DecisionLedgerClient(url, deployment_id="...", agent_id="...")
 
@@ -120,7 +118,7 @@ graph.invoke(
 Unlike Strands (whose MCP tool results arrive wrapped and need
 `extract_result_dict()` to unwrap), a plain `@tool`-decorated function's
 return value arrives unwrapped already — a dict-returning tool just hands
-`build_transaction` that dict directly. `allspark_io.integrations.langgraph`
+`build_transaction` that dict directly. `witwicky.integrations.langgraph`
 lazily imports `langchain-core`, same dependency posture as the Strands
 integration.
 

@@ -47,7 +47,7 @@ jobs:
       - name: Stamp version
         run: |
           sed -i 's/^version = ".*"/version = "${{ needs.tag.outputs.version }}"/' pyproject.toml
-          sed -i 's/^__version__ = ".*"/__version__ = "${{ needs.tag.outputs.version }}"/' src/allspark_io/__init__.py
+          sed -i 's/^__version__ = ".*"/__version__ = "${{ needs.tag.outputs.version }}"/' src/witwicky/__init__.py
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -60,5 +60,5 @@ jobs:
 
       - name: Publish to CodeArtifact
         run: |
-          aws codeartifact login --tool twine --repository sdks --domain allspark --domain-owner 014548221675 --region eu-west-1
+          aws codeartifact login --tool twine --repository sdks --domain witwickyio --domain-owner 014548221675 --region eu-west-1
           twine upload --repository codeartifact dist/*

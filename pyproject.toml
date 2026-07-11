@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "allspark-decision-ledger"
+name = "witwicky"
 version = "0.1.0"
 description = "Python SDK for the Layer 1 Decision Ledger (decision-ledger) — buffered, durable, fail-open by design"
 readme = "README.md"

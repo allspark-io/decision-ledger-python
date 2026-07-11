@@ -7,13 +7,13 @@ can't be abstracted away.
 
 Lazy dependency: strands-agents is NOT a dependency of the core package
 (pyproject.toml's `dependencies = []` stays empty) — importing this module
-is what pulls it in, so installing allspark-decision-ledger alone never
+is what pulls it in, so installing witwicky alone never
 forces a Strands install.
 
 Usage::
 
-    from allspark_io import DecisionLedgerClient
-    from allspark_io.integrations.strands import decision_ledger_hook
+    from witwicky import DecisionLedgerClient
+    from witwicky.integrations.strands import decision_ledger_hook
 
     client = DecisionLedgerClient(url, deployment_id="...", agent_id="...")
 
@@ -33,7 +33,7 @@ from typing import Any, Callable, Optional
 
 from ..client import DecisionLedgerClient
 
-logger = logging.getLogger("allspark_io.integrations.strands")
+logger = logging.getLogger("witwicky.integrations.strands")
 
 TransactionBuilder = Callable[[dict, dict, dict], Optional[dict]]
 ExternalAnchorsBuilder = Callable[[dict], Optional[dict]]

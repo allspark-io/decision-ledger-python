@@ -1,5 +1,5 @@
 """LangGraph / LangChain integration — the LangChain-side equivalent of
-allspark_io.integrations.strands.decision_ledger_hook. Same collapse of
+witwicky.integrations.strands.decision_ledger_hook. Same collapse of
 callback registration + check-then-record orchestration into one factory
 call; same one thing the caller still owns: build_transaction.
 
@@ -17,8 +17,8 @@ is what pulls it in.
 
 Usage::
 
-    from allspark_io import DecisionLedgerClient
-    from allspark_io.integrations.langgraph import decision_ledger_callback
+    from witwicky import DecisionLedgerClient
+    from witwicky.integrations.langgraph import decision_ledger_callback
 
     client = DecisionLedgerClient(url, deployment_id="...", agent_id="...")
 
@@ -40,7 +40,7 @@ from uuid import UUID
 
 from ..client import DecisionLedgerClient
 
-logger = logging.getLogger("allspark_io.integrations.langgraph")
+logger = logging.getLogger("witwicky.integrations.langgraph")
 
 TransactionBuilder = Callable[[dict, dict, dict], Optional[dict]]
 ExternalAnchorsBuilder = Callable[[dict], Optional[dict]]

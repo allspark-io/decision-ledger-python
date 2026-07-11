@@ -4,7 +4,7 @@ import time
 import pytest
 from fake_collector import FakeCollector
 
-from allspark_io import DecisionLedgerClient
+from witwicky import DecisionLedgerClient
 
 TXN = {"counterparty": "carrier-1", "instrument": "lane-1", "quantity": 1, "price": 100, "currency": "EUR"}
 

@@ -24,9 +24,9 @@ jobs:
           python-version: "3.12"
       - run: pip install -e ".[docs]"
       # pdoc doesn't auto-recurse into subpackages when given just the
-      # top-level name — allspark_io.integrations must be listed explicitly
+      # top-level name — witwicky.integrations must be listed explicitly
       # (it then pulls in its own submodules, e.g. .strands, automatically).
-      - run: pdoc allspark_io allspark_io.integrations -o site
+      - run: pdoc witwicky witwicky.integrations -o site
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
